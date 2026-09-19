@@ -1,0 +1,57 @@
+{
+  "name": "cairo-canvas2d",
+  "version": "0.1.0",
+  "description": "cairo's API, recorded in C/C++ and replayed on a Canvas2D. No rasteriser, no pixman, no freetype.",
+  "keywords": [
+    "cairo",
+    "canvas",
+    "canvas2d",
+    "wasm",
+    "webassembly",
+    "emscripten",
+    "graphics",
+    "vector",
+    "cairomm"
+  ],
+  "homepage": "https://github.com/mishan/cairo-canvas2d#readme",
+  "bugs": "https://github.com/mishan/cairo-canvas2d/issues",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mishan/cairo-canvas2d.git"
+  },
+  "license": "CC0-1.0",
+  "author": "Misha Nasledov <misha@nasledov.com>",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./replay.d.ts",
+      "default": "./replay.js"
+    },
+    "./replay.js": {
+      "types": "./replay.d.ts",
+      "default": "./replay.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "types": "./replay.d.ts",
+  "sideEffects": false,
+  "files": [
+    "replay.js",
+    "replay.d.ts",
+    "cairo.h",
+    "cairo2d.h",
+    "cairo2d.cpp",
+    "cairomm/context.h",
+    "test/",
+    "CMakeLists.txt",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "cmake -S . -B build && cmake --build build",
+    "test": "npm run build && ctest --test-dir build --output-on-failure"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

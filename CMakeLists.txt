@@ -6,10 +6,10 @@
 #
 # On its own:
 #
-#   cmake -S wasm/cairo2d -B build-cairo2d && cmake --build build-cairo2d
-#   ctest --test-dir build-cairo2d
+#   cmake -S . -B build && cmake --build build
+#   ctest --test-dir build
 #
-# Inside another build, which is how thinksynth uses it:
+# Inside another build, which is how a caller uses it:
 #
 #   add_subdirectory(<here> cairo2d)
 #   target_link_libraries(mytarget PRIVATE cairo2d)
