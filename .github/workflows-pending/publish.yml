@@ -1,0 +1,50 @@
+# Publish to npm on a version tag. The tests run first and the job stops
+# if they fail, because a version number spent is spent.
+#
+# Needs an NPM_TOKEN secret with publish rights, and the tag to match the
+# version in package.json.
+
+name: publish
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: read
+  id-token: write          # npm provenance
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: https://registry.npmjs.org
+
+      - name: Configure
+        run: cmake -S . -B build
+
+      - name: Build
+        run: cmake --build build
+
+      - name: Test
+        run: ctest --test-dir build --output-on-failure
+
+      - name: Check the tag against package.json
+        run: |
+          tag="${GITHUB_REF_NAME#v}"
+          have="$(node -p 'require("./package.json").version')"
+          test "$tag" = "$have" || {
+              echo "tag $tag is not package.json's $have"
+              exit 1
+          }
+
+      - name: Publish
+        run: npm publish --provenance --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

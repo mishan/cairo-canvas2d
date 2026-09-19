@@ -27,8 +27,12 @@ No rasteriser ships with it. The browser has one.
 - **Draw it again in JavaScript.** Two versions of every picture a person
   looks at, kept in step by hand for ever.
 - **A C binding to the Canvas API.** Several exist -- [wasm-canvas][wc] is
-  a good one -- and they are the right answer for new code. They are no
-  help at all to code that already says `cairo_move_to`.
+  a good one. If you are writing the drawing code now, and it will only
+  ever run in a browser, write it against one of those: you do not need
+  cairo's names, and this would be a layer between you and the canvas for
+  nothing. What they cannot do is help code that already says
+  `cairo_move_to`, because reaching them means rewriting every call. That
+  code is what this is for.
 - **An abstraction with a web backend.** [piet][piet] is this, done well,
   in Rust: one drawing API over cairo, Direct2D, CoreGraphics and the web
   canvas. If you are starting from nothing, start there. It is not a

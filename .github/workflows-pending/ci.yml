@@ -1,0 +1,54 @@
+# Both halves, on every push: the recorder is ordinary C++ and the
+# replayer is ordinary JavaScript, so neither needs Emscripten to be
+# checked -- only to be used together.
+
+name: test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # ctest runs replaytest.mjs through whatever node is on PATH, and
+      # skips it with a message if there is none. There is one here.
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Configure
+        run: cmake -S . -B build
+
+      - name: Build
+        run: cmake --build build --config Release
+
+      - name: Test
+        run: ctest --test-dir build --build-config Release --output-on-failure
+
+  package:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      # What `files` in package.json says ships, actually shipping. A
+      # header left out of that list is a package that installs and then
+      # fails to compile.
+      - name: Pack
+        run: npm pack --dry-run
