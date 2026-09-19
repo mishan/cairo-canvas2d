@@ -26,6 +26,12 @@
 #include "cairo2d.h"
 #include "cairomm/context.h"
 
+/* MSVC's <math.h> has no M_PI unless _USE_MATH_DEFINES was defined ahead
+   of it, which is a thing to remember in every file that includes it.
+   One constant is less to remember, and the arc this test records does
+   not care where the number came from. */
+static const double PI = 3.14159265358979323846;
+
 static int failures = 0;
 
 static void
@@ -189,7 +195,7 @@ drawThroughC (cairo_t *cr)
     cairo_line_to(cr, 3.0, 4.0);
     cairo_curve_to(cr, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0);
     cairo_new_sub_path(cr);
-    cairo_arc(cr, 11.0, 12.0, 3.0, 0.0, M_PI);
+    cairo_arc(cr, 11.0, 12.0, 3.0, 0.0, PI);
     cairo_rectangle(cr, 0.0, 0.0, 20.0, 30.0);
     cairo_close_path(cr);
     cairo_fill_preserve(cr);
@@ -211,7 +217,7 @@ drawThroughCairomm (const Cairo::RefPtr<Cairo::Context> &cr)
     cr->line_to(3.0, 4.0);
     cr->curve_to(5.0, 6.0, 7.0, 8.0, 9.0, 10.0);
     cr->begin_new_sub_path();
-    cr->arc(11.0, 12.0, 3.0, 0.0, M_PI);
+    cr->arc(11.0, 12.0, 3.0, 0.0, PI);
     cr->rectangle(0.0, 0.0, 20.0, 30.0);
     cr->close_path();
     cr->fill_preserve();
@@ -253,7 +259,7 @@ checkFigure (cairo_t *cr)
        a picture rather than a crash. */
     expectArg(cr, "the C face", 3, 3, 0.5);      /* the alpha           */
     expectArg(cr, "the C face", 9, 5, 10.0);     /* curve_to's y3       */
-    expectArg(cr, "the C face", 11, 4, M_PI);    /* the arc's end angle */
+    expectArg(cr, "the C face", 11, 4, PI);    /* the arc's end angle */
     expectArg(cr, "the C face", 12, 3, 30.0);    /* the rectangle's h   */
 
     std::vector<Record> viaC;
